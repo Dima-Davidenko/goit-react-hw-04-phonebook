@@ -1,12 +1,19 @@
 import { Typography } from '@mui/material';
 import { nanoid } from 'nanoid';
 import React, { useState } from 'react';
-import phonebook from '../data/phonebook.json';
 import { Contacts, Container, Filter, NewContactForm, Section } from './';
+import * as storageApi from '../utils/storageApi';
+import { useEffect } from 'react';
 
 export const App = () => {
-  const [contacts, setContacts] = useState([...phonebook]);
+  const [contacts, setContacts] = useState(() => {
+    return storageApi.load('contacts') ?? [];
+  });
   const [filter, setFilter] = useState('');
+
+  useEffect(() => {
+    storageApi.save('contacts', contacts);
+  }, [contacts]);
 
   const addContact = ({ name, number }) => {
     if (contacts.some(contact => contact.name.toLowerCase() === name.toLowerCase())) {
